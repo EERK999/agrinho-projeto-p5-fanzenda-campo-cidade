@@ -1,2 +1,1 @@
-# agrinho-projeto-p5-fanzenda-campo-cidade
-Projeto que mostra o valor da conexão campo cidade e diverte enquanto o faz.
+O projeto “Fazenda Campo-Cidade” visa promover a conscientização sobre a importância da integração entre áreas rurais e urbanas, especialmente no contexto da agricultura familiar e do comércio local. Seu objetivo social é valorizar o trabalho do pequeno agricultor, estimular a economia regional e educar sobre a cadeia produtiva dos alimentos de forma lúdica e interativa.
