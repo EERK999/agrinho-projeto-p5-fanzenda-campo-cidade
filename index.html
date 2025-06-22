@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Fazendinha Feliz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+    <script defer src="sketch.js"></script>
+    <style>
+      .overlay-btn {
+        position: absolute;
+        bottom: 32px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        transition: none !important;
+      }
+      .overlay-btn:hover {
+        transform: translateX(-50%) !important;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+      .start-card {
+        position: relative;
+        padding: 32px;
+        padding-bottom: 64px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 400px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="start-screen" id="startScreen">
+      <div class="start-wrapper">
+        <div class="start-card">
+          <div class="start-subcard">
+            <h1>🌿 Fazenda <span style="color:#446145">campo-cidade</span> 🌿</h1>
+          </div>
+          <button class="btn" id="btnPlay">Jogar</button>
+          <button class="btn" id="btnHowToPlay">Como Jogar</button>
+          <button class="btn" id="btnCredits">Créditos</button>
+          <div class="card-footer-decor">
+            <div class="tree-line">
+              <span class="tree t1">🌳</span>
+              <span class="tree t2">🌲</span>
+              <span class="tree t3">🌴</span>
+              <span class="tree t4">🌱</span>
+              <span class="tree t5">🌾</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Como Jogar -->
+    <div id="howToPlay" class="start-screen hidden">
+      <div class="start-card">
+        <canvas id="howToPlayCanvas" width="700" height="300" style="background:#fff; border-radius: 12px;"></canvas>
+        <button class="btn overlay-btn" onclick="returnToMenu()">Voltar ao menu</button>
+      </div>
+    </div>
+
+    <!-- Créditos -->
+    <div id="credits" class="start-screen hidden">
+      <div class="start-card">
+        <canvas id="creditsCanvas" width="700" height="300" style="background:#fff; border-radius: 12px;"></canvas>
+        <button class="btn overlay-btn" onclick="returnToMenu()">Voltar ao menu</button>
+      </div>
+    </div>
+
+    <div id="hud" class="hidden">
+      <div id="money">💰 0</div>
+      <div id="score">⭐ 0</div>
+      <div id="collected-indicator" title="Itens prontos para vender 📋"></div>
+      <div id="inventory"></div>
+      <div id="collected-panel"></div>
+    </div>
+
+    <div id="shop" class="shop-overlay hidden">
+      <div class="shop-box">
+        <h2>🛒 agropecuária da cidade</h2>
+        <div id="seed-catalog"></div>
+        <button class="sell-btn" onclick="sellItems()">💰 Vender Itens</button>
+        <button onclick="closeShopModal()">Fechar</button>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById("btnHowToPlay").addEventListener("click", () => {
+        document.getElementById("startScreen").classList.add("hidden");
+        document.getElementById("howToPlay").classList.remove("hidden");
+
+        const ctx = document.getElementById("howToPlayCanvas").getContext("2d");
+        ctx.clearRect(0, 0, 700, 300);
+        ctx.font = "11px Fredoka";
+        ctx.fillStyle = "#333";
+
+        const texto = "A conexão entre o campo e a cidade fortalece o comércio local ao permitir o escoamento eficiente da produção agrícola para centros urbanos. Com isso, agricultores ganham mais visibilidade e renda, enquanto a cidade recebe alimentos mais frescos, saudáveis e a preços justos. Essa integração promove a economia regional, gera empregos e estimula práticas sustentáveis, construindo um ciclo de prosperidade para ambos os lados. Dito isso, para jogar, utilize as teclas W, A, S e D para mover o personagem pelo mapa. Você começa com uma semente aleatória no inventário. Pressione os números de 1 a 6 para selecionar uma semente e clique com o mouse em um local vazio para plantá-la. Após alguns segundos, a planta crescerá e poderá ser colhida clicando sobre ela. As colheitas ficam armazenadas em um painel no canto inferior da tela. Quando estiver próximo ao caminhão, pressione R para abrir a loja. Lá, você pode vender suas colheitas e comprar novas sementes com o dinheiro ganho. O objetivo do jogo é expandir sua produção, aumentar seus pontos com colheitas e melhorar seu comércio com a cidade. Jogue de forma estratégica e aproveite os benefícios da integração entre campo e cidade!";
+        drawMultilineText(ctx, texto, 20, 15, 600, 15);
+      });
+
+      document.getElementById("btnCredits").addEventListener("click", () => {
+        document.getElementById("startScreen").classList.add("hidden");
+        document.getElementById("credits").classList.remove("hidden");
+
+        const ctx = document.getElementById("creditsCanvas").getContext("2d");
+        ctx.clearRect(0, 0, 700, 300);
+        ctx.font = "20px Fredoka";
+        ctx.fillStyle = "#333";
+
+        const texto = "Créditos dedicados a Erik Emanuel Rocha Kailer, ao meu professor Bruno, ao Alura, ao governo do estado e ao agrinho.";
+        drawMultilineText(ctx, texto, 50, 80, 600, 28);
+      });
+
+      function drawMultilineText(ctx, text, x, y, maxWidth, lineHeight) {
+        const words = text.split(' ');
+        let line = '';
+        for (let i = 0; i < words.length; i++) {
+          const testLine = line + words[i] + ' ';
+          const metrics = ctx.measureText(testLine);
+          const testWidth = metrics.width;
+
+          if (testWidth > maxWidth && i > 0) {
+            ctx.fillText(line, x, y);
+            line = words[i] + ' ';
+            y += lineHeight;
+          } else {
+            line = testLine;
+          }
+        }
+        ctx.fillText(line, x, y);
+      }
+
+      function returnToMenu() {
+        document.getElementById("howToPlay").classList.add("hidden");
+        document.getElementById("credits").classList.add("hidden");
+        document.getElementById("startScreen").classList.remove("hidden");
+      }
+    </script>
+  </body>
+</html>
